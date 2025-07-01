@@ -7,25 +7,25 @@ import {
   FlatList,
   Share,
   ScrollView,
-} from 'react-native';
-import React, { useState, useEffect } from 'react';
-import styles from './styles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import AddGroupModal from '../../components/AddGroupModal';
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import styles from "./styles";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import AddGroupModal from "../../components/AddGroupModal";
 import {
   joinGroup,
   leaveGroup,
   subscribeToGroups,
   subscribeToMyGroups,
-} from '../../services/groups';
-import GroupCard from '../../components/GroupCard';
-import LinearGradient from 'react-native-linear-gradient';
-import CustomHeader from '../../components/CustomHeader';
-import CustomSearch from '../../components/CustomSearch';
+} from "../../services/groups";
+import GroupCard from "../../components/GroupCard";
+import LinearGradient from "react-native-linear-gradient";
+import CustomHeader from "../../components/CustomHeader";
+import CustomSearch from "../../components/CustomSearch";
 
 function Home({ route }: { route: any }) {
   const { user } = route.params || {};
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [allGroups, setAllGroups] = useState([]);
   const [isAddGroupModalVisible, setIsAddGroupModalVisible] = useState(false);
   const [groups, setGroups] = useState([]);
@@ -59,7 +59,7 @@ function Home({ route }: { route: any }) {
   // }, [navigation, user, headerLeft]);
 
   useEffect(() => {
-    const unsubscribe = subscribeToMyGroups(user?.uid, updated => {
+    const unsubscribe = subscribeToMyGroups(user?.uid, (updated) => {
       if (search?.length > 0) {
         const filteredGroups = updated?.filter((item: any) => {
           return item?.name?.toLowerCase().includes(search?.toLowerCase());
@@ -74,7 +74,7 @@ function Home({ route }: { route: any }) {
   }, [user?.uid, search]);
 
   useEffect(() => {
-    const unsubscribe = subscribeToGroups(user?.uid, updatedGroups => {
+    const unsubscribe = subscribeToGroups(user?.uid, (updatedGroups) => {
       const filteredGroups = updatedGroups?.filter((item: any) => {
         if (search) {
           return (
@@ -128,25 +128,25 @@ function Home({ route }: { route: any }) {
   const handleShare = async (groupId: string) => {
     try {
       const result = await Share.share({
-        message: 'Check out this awesome group on our app!',
-        title: 'Share Group',
+        message: "Check out this awesome group on our app!",
+        title: "Share Group",
         url: `https://your-app-url.com/group/${groupId}`, // Replace with your app's URL
       });
 
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
           // shared with activity type of result.activityType
-          console.log('Shared with activity type:', result.activityType);
+          console.log("Shared with activity type:", result.activityType);
         } else {
           // shared
-          console.log('Shared successfully');
+          console.log("Shared successfully");
         }
       } else if (result.action === Share.dismissedAction) {
         // dismissed
-        console.log('Share dismissed');
+        console.log("Share dismissed");
       }
     } catch (error) {
-      console.error('Error sharing:', error);
+      console.error("Error sharing:", error);
     }
   };
 
@@ -155,15 +155,12 @@ function Home({ route }: { route: any }) {
       <CustomHeader headerLeft={headerLeft} />
       <CustomSearch
         placeholder="Search"
-        onChangeText={text => {
+        onChangeText={(text) => {
           setSearch(text);
         }}
       />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ flex: 1, marginBottom: 60 }}
-      >
-        <View style={styles.content}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+        <View style={[styles.content, { paddingBottom: 80 }]}>
           <View style={styles.groupsContainer}>
             <Text style={styles.groupsTitle}>My Groups</Text>
           </View>
@@ -179,7 +176,7 @@ function Home({ route }: { route: any }) {
             <FlatList
               data={groups}
               renderItem={renderGroups}
-              keyExtractor={item => item?.id}
+              keyExtractor={(item) => item?.id}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               ListEmptyComponent={
@@ -209,7 +206,7 @@ function Home({ route }: { route: any }) {
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
                   renderItem={renderAllGroups}
-                  keyExtractor={item => item?.id}
+                  keyExtractor={(item) => item?.id}
                   ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                       <Text style={styles.emptyText}>No groups found</Text>
@@ -227,7 +224,7 @@ function Home({ route }: { route: any }) {
         onPress={() => setIsAddGroupModalVisible(true)}
       >
         <LinearGradient
-          colors={['#f6b300', '#f69400']}
+          colors={["#f6b300", "#f69400"]}
           style={styles.addGroupButton}
           start={{ x: 0, y: 1 }}
           end={{ x: 0, y: 0 }}
