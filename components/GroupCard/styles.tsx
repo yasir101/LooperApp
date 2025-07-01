@@ -1,0 +1,81 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  card: {
+    width: 250,
+    height: 420,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    paddingBottom: 10,
+  },
+  image: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  imagePlaceholder: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  imagePlaceholderIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#D9D9D9',
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#333',
+  },
+  subheading: {
+    fontSize: 14,
+    color: '#777',
+    height: 45,
+    textAlign: 'justify',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  joinButton: {
+    borderRadius: 15,
+    width: 120,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 1,
+  },
+  joinButtonText: {
+    color: '#000',
+  },
+  exploreButtonText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  exploreButton: {
+    width: 120,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#f6b300',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
