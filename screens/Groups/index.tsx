@@ -7,6 +7,7 @@ import {
   FlatList,
   Share,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import styles from "./styles";
@@ -21,15 +22,31 @@ import {
 import GroupCard from "../../components/GroupCard";
 import LinearGradient from "react-native-linear-gradient";
 import CustomHeader from "../../components/CustomHeader";
-import CustomSearch from "../../components/CustomSearch";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import TopTabNavigator from "../../navigation/TopTabNavigator";
 
-function Home({ route }: { route: any }) {
-  const { user } = route.params || {};
-  const [search, setSearch] = useState("");
+type RootStackParamList = {
+  Groups: undefined;
+  GroupDetail: { groupId: string };
+};
+
+function Groups() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [user, setUser] = useState<any>({});
   const [allGroups, setAllGroups] = useState([]);
   const [isAddGroupModalVisible, setIsAddGroupModalVisible] = useState(false);
   const [groups, setGroups] = useState([]);
-  // const allGroups = useGetAllGroups(user?.uid);
+  const { height } = Dimensions.get("window");
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await AsyncStorage.getItem("user");
+      setUser(JSON.parse(userData || "{}"));
+    };
+    loadUser();
+  }, []);
+
   const headerLeft = (
     <View style={styles.headerLeft}>
       <Image source={{ uri: user?.photoURL }} style={styles.headerImage} />
@@ -37,83 +54,65 @@ function Home({ route }: { route: any }) {
     </View>
   );
 
-  // React.useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerShown: true,
-  //     headerTitle: '',
-  //     headerStyle: [styles.headerStyle],
-  //     headerTitleStyle: styles.headerTitleStyle,
-  //     headerLeft: headerLeft,
-  //     headerRight: null,
-  //     headerSearchBarOptions: {
-  //       placeholder: 'Search',
-  //       placeholderTextColor: '#000',
-  //       searchBarStyle: styles.searchInput,
-  //       containerStyle: styles.searchContainer,
-  //       onChangeText: (event: any) => {
-  //         // Handle search text changes here
-  //         console.log('Search text:', event?.nativeEvent?.text);
-  //       },
-  //     },
-  //   });
-  // }, [navigation, user, headerLeft]);
-
   useEffect(() => {
-    const unsubscribe = subscribeToMyGroups(user?.uid, (updated) => {
-      if (search?.length > 0) {
-        const filteredGroups = updated?.filter((item: any) => {
-          return item?.name?.toLowerCase().includes(search?.toLowerCase());
-        });
-        setGroups(filteredGroups as any);
-      } else {
+    const unsubscribe = subscribeToMyGroups(
+      user?.uid || "",
+      "all",
+      (updated) => {
         setGroups(updated as any);
       }
-    });
+    );
 
     return () => unsubscribe(); // clean up listeners
-  }, [user?.uid, search]);
+  }, [user?.uid]);
 
   useEffect(() => {
     const unsubscribe = subscribeToGroups(user?.uid, (updatedGroups) => {
       const filteredGroups = updatedGroups?.filter((item: any) => {
-        if (search) {
-          return (
-            item?.name?.toLowerCase().includes(search?.toLowerCase()) &&
-            !item?.admin?.includes(user?.uid)
-          );
-        }
         return !item?.admin?.includes(user?.uid);
       });
       setAllGroups(filteredGroups as any);
     });
 
     return () => unsubscribe(); // Cleanup listener on unmount
-  }, [user?.uid, search]);
+  }, [user?.uid]);
 
   const renderGroups = ({ item }: { item: any }) => {
     return (
-      <GroupCard
-        name={`${item?.name} (${item?.type})`}
-        imageUrl={item?.imageUrl}
-        description={item?.description}
-      />
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("GroupDetail", { groupId: item?.id })
+        }
+      >
+        <GroupCard
+          name={`${item?.name} (${item?.type})`}
+          imageUrl={item?.imageUrl}
+          description={item?.description}
+        />
+      </TouchableOpacity>
     );
   };
 
   const renderAllGroups = ({ item }: { item: any }) => {
     const isJoined = item?.joinedBy?.includes(user?.uid);
     return (
-      <GroupCard
-        name={`${item?.name} (${item?.type})`}
-        imageUrl={item?.imageUrl}
-        description={item?.description}
-        isJoined={isJoined}
-        type="join"
-        onLeave={() => handleLeaveGroup(item?.id)}
-        onJoin={() => handleJoinGroup(item?.id)}
-        onExplore={() => {}}
-        onShare={() => handleShare(item?.id)}
-      />
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("GroupDetail", { groupId: item?.id })
+        }
+      >
+        <GroupCard
+          name={`${item?.name} (${item?.type})`}
+          imageUrl={item?.imageUrl}
+          description={item?.description}
+          isJoined={isJoined}
+          type="join"
+          onLeave={() => handleLeaveGroup(item?.id)}
+          onJoin={() => handleJoinGroup(item?.id)}
+          onExplore={() => {}}
+          onShare={() => handleShare(item?.id)}
+        />
+      </TouchableOpacity>
     );
   };
 
@@ -153,13 +152,29 @@ function Home({ route }: { route: any }) {
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader headerLeft={headerLeft} />
-      <CustomSearch
-        placeholder="Search"
-        onChangeText={(text) => {
-          setSearch(text);
-        }}
-      />
-      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+      <TopTabNavigator />
+      <TouchableOpacity
+        style={styles.addGroupButton}
+        onPress={() => setIsAddGroupModalVisible(true)}
+      >
+        <LinearGradient
+          colors={["#f6b300", "#f69400"]}
+          style={styles.addGroupButton}
+          start={{ x: 0, y: 1 }}
+          end={{ x: 0, y: 0 }}
+        >
+          <Icon name="add" size={24} color="#000" />
+        </LinearGradient>
+      </TouchableOpacity>
+      {isAddGroupModalVisible && (
+        <AddGroupModal
+          height={height * 1.58}
+          visible={isAddGroupModalVisible}
+          userId={user?.uid}
+          onRequestClose={() => setIsAddGroupModalVisible(false)}
+        />
+      )}
+      {/* <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
         <View style={[styles.content, { paddingBottom: 80 }]}>
           <View style={styles.groupsContainer}>
             <Text style={styles.groupsTitle}>My Groups</Text>
@@ -238,9 +253,9 @@ function Home({ route }: { route: any }) {
           userId={user?.uid}
           onRequestClose={() => setIsAddGroupModalVisible(false)}
         />
-      )}
+      )} */}
     </SafeAreaView>
   );
 }
 
-export default Home;
+export default Groups;

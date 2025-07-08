@@ -1,7 +1,7 @@
-import { View, Animated } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import styles from './styles';
-import { AuthService } from '../../services/auth';
+import { View, Animated } from "react-native";
+import React, { useEffect, useState } from "react";
+import styles from "./styles";
+import { AuthService } from "../../services/auth";
 
 const Splash = ({ navigation }: { navigation: any }) => {
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -26,9 +26,9 @@ const Splash = ({ navigation }: { navigation: any }) => {
         const checkSignInStatus = async () => {
           const userCredential = await AuthService.checkExistingSignIn();
           if (userCredential) {
-            navigation.navigate('Dashboard', { user: userCredential.user });
+            navigation.navigate("Groups", { user: userCredential.user });
           } else {
-            navigation.navigate('Login');
+            navigation.navigate("Login");
           }
         };
 
@@ -44,7 +44,7 @@ const Splash = ({ navigation }: { navigation: any }) => {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require('../../assets/images/logo.png')}
+        source={require("../../assets/images/logo.png")}
         style={[
           styles.logo,
           {

@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "100%",
-    height: "45%",
+    height: "35%",
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -48,54 +48,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 15,
   },
-  modalDropdown: {
-    borderRadius: 10,
-    overflow: "hidden",
-    marginTop: 4,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
-    boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-  },
-  dropdownItem: {
-    height: 53,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 5,
-    gap: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
   radioContainer: {
     flexDirection: "row",
     gap: 20,
     marginBottom: 10,
-  },
-  placeholderStyle: {
-    fontSize: 14,
-    color: "#999",
-  },
-  imagePickerContainer: {
-    width: "100%",
-    height: 200,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  groupImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  imagePlaceholderText: {
-    fontSize: 14,
-    color: "#999",
   },
   radioButton: {
     flexDirection: "row",
@@ -133,6 +89,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     borderRadius: 20,
+    marginTop: 10,
     alignItems: "center",
   },
   modalButtonText: {

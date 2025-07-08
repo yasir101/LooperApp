@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import Icon2 from 'react-native-vector-icons/Feather';
-import { styles } from './styles';
-import LinearGradient from 'react-native-linear-gradient';
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import Icon2 from "react-native-vector-icons/Feather";
+import { styles } from "./styles";
+import LinearGradient from "react-native-linear-gradient";
 
 const GroupCard = ({
   name,
@@ -31,6 +31,8 @@ const GroupCard = ({
         <Image
           source={{ uri: imageUrl }} // Replace with your actual image URI
           style={styles.image}
+          onLoadStart={() => console.log("Image loading started")}
+          onLoadEnd={() => console.log("Image loading finished")}
         />
       ) : (
         <View style={styles.imagePlaceholder}>
@@ -41,11 +43,11 @@ const GroupCard = ({
       )}
       <Text style={styles.heading}>{name}</Text>
       <Text style={styles.subheading}>{description}</Text>
-      {type === 'join' && (
+      {type === "join" && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={isJoined ? onLeave : onJoin}>
             <LinearGradient
-              colors={['#f6b300', '#f69400']}
+              colors={["#f6b300", "#f69400"]}
               start={{ x: 0, y: 1 }}
               end={{ x: 0, y: 0 }}
               style={styles.joinButton}
@@ -62,7 +64,7 @@ const GroupCard = ({
             onPress={isJoined ? onShare : onExplore}
           >
             <Text style={styles.exploreButtonText}>
-              {isJoined ? 'Share' : 'Explore'}
+              {isJoined ? "Share" : "Explore"}
             </Text>
           </TouchableOpacity>
         </View>

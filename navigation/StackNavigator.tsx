@@ -1,7 +1,8 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import Login from '../screens/Login';
-import Splash from '../screens/Splash';
-import BottomTabNavigator from './BottomTabNavigator';
+import { createStackNavigator } from "@react-navigation/stack";
+import Login from "../screens/Login";
+import Splash from "../screens/Splash";
+import BottomTabNavigator from "./BottomTabNavigator";
+import GroupDetail from "../screens/GroupDetail";
 
 const Stack = createStackNavigator();
 
@@ -20,8 +21,13 @@ const StackNavigator = () => {
       />
       <Stack.Screen
         options={{ headerShown: false }}
-        name="Dashboard"
+        name="Groups"
         component={BottomTabNavigator}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="GroupDetail"
+        component={GroupDetail}
       />
     </Stack.Navigator>
   );

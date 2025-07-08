@@ -1,10 +1,12 @@
-import { Image, View } from 'react-native';
-import React, { useEffect } from 'react';
-import { statusCodes } from '@react-native-google-signin/google-signin';
-import { AuthService } from '../../services/auth';
-import { useFirebaseInit } from '../../hooks/useFirebaseInit';
-import { AuthButton } from '../../components/AuthButton';
-import styles from './styles';
+import { Image, View } from "react-native";
+import React, { useEffect } from "react";
+import { statusCodes } from "@react-native-google-signin/google-signin";
+import { AuthService } from "../../services/auth";
+import { useFirebaseInit } from "../../hooks/useFirebaseInit";
+import { AuthButton } from "../../components/AuthButton";
+import styles from "./styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUser } from "../../services/users";
 
 const Login = ({ navigation }: { navigation: any }) => {
   const isFirebaseInitialized = useFirebaseInit();
@@ -15,7 +17,8 @@ const Login = ({ navigation }: { navigation: any }) => {
     const checkSignInStatus = async () => {
       const userCredential = await AuthService.checkExistingSignIn();
       if (userCredential) {
-        navigation.navigate('Dashboard', { user: userCredential.user });
+        await AsyncStorage.setItem("user", JSON.stringify(userCredential.user));
+        navigation.navigate("Groups", { user: userCredential.user });
       }
     };
 
@@ -24,26 +27,28 @@ const Login = ({ navigation }: { navigation: any }) => {
 
   const handleGoogleSignIn = async () => {
     if (!isFirebaseInitialized) {
-      console.error('Firebase not initialized yet');
+      console.error("Firebase not initialized yet");
       return;
     }
 
     try {
       const userCredential = await AuthService.signInWithGoogle();
-      navigation.navigate('Dashboard', { user: userCredential.user });
+      await AsyncStorage.setItem("user", JSON.stringify(userCredential.user));
+      await setUser(userCredential.user.uid, userCredential.user);
+      navigation.navigate("Groups", { user: userCredential.user });
     } catch (error: any) {
       switch (error.code) {
         case statusCodes.SIGN_IN_CANCELLED:
-          console.log('User cancelled the sign-in flow');
+          console.log("User cancelled the sign-in flow");
           break;
         case statusCodes.IN_PROGRESS:
-          console.log('Sign-in is already in progress');
+          console.log("Sign-in is already in progress");
           break;
         case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-          console.log('Play services not available');
+          console.log("Play services not available");
           break;
         default:
-          console.error('Google Sign-In Error:', error);
+          console.error("Google Sign-In Error:", error);
       }
     }
   };
@@ -51,22 +56,22 @@ const Login = ({ navigation }: { navigation: any }) => {
   const handleAppleSignIn = async () => {
     try {
       const userCredential = await AuthService.signInWithApple();
-      navigation.navigate('Dashboard', { user: userCredential.user });
+      navigation.navigate("Groups", { user: userCredential.user });
     } catch (error) {
-      console.error('Apple Sign-In Error:', error);
+      console.error("Apple Sign-In Error:", error);
     }
   };
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/images/logo_with_text.png')}
+        source={require("../../assets/images/logo_with_text.png")}
         style={styles.logo}
       />
 
       <AuthButton
         onPress={handleGoogleSignIn}
-        icon={require('../../assets/images/GoogleLogo.png')}
+        icon={require("../../assets/images/GoogleLogo.png")}
         text="Continue with Google"
         style={styles.googleButton}
         textStyle={styles.googleText}
@@ -75,7 +80,7 @@ const Login = ({ navigation }: { navigation: any }) => {
 
       <AuthButton
         onPress={handleAppleSignIn}
-        icon={require('../../assets/images/icons8-apple-150.png')}
+        icon={require("../../assets/images/icons8-apple-150.png")}
         text="Continue with Apple"
         style={styles.appleButton}
         textStyle={styles.appleText}

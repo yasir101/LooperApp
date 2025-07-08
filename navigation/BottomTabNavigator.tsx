@@ -1,9 +1,10 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Profile from '../screens/Profile';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Tabbar from '../components/Tabbar';
-import Home from '../screens/Home';
-import Community from '../screens/Community';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Profile from "../screens/Profile";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import Tabbar from "../components/Tabbar";
+import Community from "../screens/Community";
+import Groups from "../screens/Groups";
+import TopTabNavigator from "./TopTabNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -19,17 +20,17 @@ function BottomTabNavigator({ route }: { route: any }) {
               color={color}
               size={focused ? size + 4 : size}
               style={[
-                { fontWeight: '900', fontSize: focused ? 26 : 22 },
+                { fontWeight: "900", fontSize: focused ? 26 : 22 },
                 focused && {},
               ]}
             />
           ),
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#999',
+          tabBarActiveTintColor: "#000",
+          tabBarInactiveTintColor: "#999",
         }}
         name="Groups"
         initialParams={route.params}
-        component={Home}
+        component={Groups}
       />
       <Tab.Screen
         options={{
@@ -39,13 +40,13 @@ function BottomTabNavigator({ route }: { route: any }) {
               color={color}
               size={focused ? size + 4 : size}
               style={[
-                { fontWeight: '900', fontSize: focused ? 26 : 22 },
+                { fontWeight: "900", fontSize: focused ? 26 : 22 },
                 focused && {},
               ]}
             />
           ),
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#999',
+          tabBarActiveTintColor: "#000",
+          tabBarInactiveTintColor: "#999",
         }}
         name="Chats"
         component={Community}
@@ -58,13 +59,13 @@ function BottomTabNavigator({ route }: { route: any }) {
               color={color}
               size={focused ? size + 4 : size}
               style={[
-                { fontWeight: '900', fontSize: focused ? 26 : 22 },
+                { fontWeight: "900", fontSize: focused ? 26 : 22 },
                 focused && {},
               ]}
             />
           ),
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#999',
+          tabBarActiveTintColor: "#000",
+          tabBarInactiveTintColor: "#999",
         }}
         name="Profile"
         component={Profile}
