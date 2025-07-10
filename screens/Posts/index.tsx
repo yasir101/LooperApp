@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
+import { View, FlatList, RefreshControl, Text } from "react-native";
 import auth from "@react-native-firebase/auth";
 import CreatePost from "../../components/CreatePost";
 import PostCard from "../../components/PostCard";
@@ -11,17 +11,21 @@ import {
   addComment,
   deletePost,
   subscribeToPosts,
+  updatePost,
 } from "../../services/posts";
 import { styles } from "./styles";
 import { getUser } from "../../services/users";
 
 type PostsScreenProps = {
   groupId?: string;
+  group?: any;
 };
 
-const PostsScreen: React.FC<PostsScreenProps> = ({ groupId }) => {
+const PostsScreen: React.FC<PostsScreenProps> = ({ groupId, group }) => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [groupJoinedUsers, setGroupJoinedUsers] = useState<any[]>([]);
   const currentUser = auth().currentUser;
 
   const loadPosts = async () => {
@@ -70,13 +74,14 @@ const PostsScreen: React.FC<PostsScreenProps> = ({ groupId }) => {
     setRefreshing(false);
   };
 
-  const handleCreatePost = async (content: string) => {
+  const handleCreatePost = async (content: string, image: string) => {
     try {
       if (!currentUser) return;
 
       const postData = {
         userId: currentUser.uid,
         content,
+        imageUrl: image,
         ...(groupId && { groupId }),
       };
 
@@ -116,36 +121,79 @@ const PostsScreen: React.FC<PostsScreenProps> = ({ groupId }) => {
     }
   };
 
+  const handleUpdatePost = async (content: string, image: string) => {
+    try {
+      if (!currentUser || !editingPost) return;
+
+      const postData = {
+        userId: currentUser.uid,
+        content,
+        imageUrl: image,
+        ...(groupId && { groupId }),
+      };
+
+      await updatePost(editingPost.id, postData);
+      await loadPosts(); // Refresh the posts list
+    } catch (error) {
+      console.error("Error updating post:", error);
+    }
+  };
+  const selectPostToEdit = (postId: string) => {
+    const post = posts.find((post) => post.id === postId);
+    if (post) {
+      setEditingPost(post);
+    }
+  };
+
   useEffect(() => {
     loadPosts();
   }, [groupId]);
 
+  console.log("RIZWAN", group, group.joinedBy, currentUser?.uid);
   if (!currentUser) return null;
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <PostCard
-            post={item}
-            currentUserId={currentUser.uid}
-            onLike={handleLike}
-            onComment={handleComment}
-            onDelete={
-              item.userId === currentUser.uid ? handleDeletePost : undefined
-            }
+      {posts.length > 0 ? (
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <PostCard
+              post={item}
+              currentUserId={currentUser.uid}
+              onLike={handleLike}
+              onComment={handleComment}
+              onDelete={
+                item.userId === currentUser.uid ? handleDeletePost : undefined
+              }
+              onEdit={
+                item.userId === currentUser.uid ? selectPostToEdit : undefined
+              }
+            />
+          )}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          // ListFooterComponent={
+          //   <CreatePost onSubmit={handleCreatePost} groupId={groupId} />
+          // }
+        />
+      ) : (
+        <View style={styles.noPostsContainer}>
+          <Text style={styles.noPostsText}>No posts found</Text>
+        </View>
+      )}
+      {group.joinedBy.includes(currentUser?.uid) ||
+        (currentUser?.uid === group.admin && (
+          <CreatePost
+            post={editingPost}
+            onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
+            onCancel={() => setEditingPost(null)}
+            groupId={groupId}
+            isEdit={editingPost !== null}
           />
-        )}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        // ListFooterComponent={
-        //   <CreatePost onSubmit={handleCreatePost} groupId={groupId} />
-        // }
-      />
-      <CreatePost onSubmit={handleCreatePost} groupId={groupId} />
+        ))}
     </View>
   );
 };

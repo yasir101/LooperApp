@@ -65,8 +65,6 @@ const GroupDetail = ({ route }: { route: any }) => {
     };
     loadUser();
   }, []);
-  console.log("activeTab", activeTab);
-  console.log("groupId", groupId);
 
   useEffect(() => {
     const unsubscribe = listenToGroupJoinedUsers(groupId, setGroupJoinedUsers);
@@ -75,8 +73,6 @@ const GroupDetail = ({ route }: { route: any }) => {
       unsubscribe();
     };
   }, [groupId]);
-
-  console.log("groupJoinedUsers", groupJoinedUsers);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -175,7 +171,7 @@ const GroupDetail = ({ route }: { route: any }) => {
             </ScrollView>
           ) : (
             <View style={styles.postsContainer}>
-              <PostsScreen groupId={groupId} />
+              <PostsScreen groupId={groupId} group={group} />
             </View>
           )}
         </View>

@@ -65,7 +65,6 @@ function Active() {
   }, [user?.uid]);
 
   const renderGroups = ({ item }: { item: any }) => {
-    console.log(item);
     return (
       <TouchableOpacity
         onPress={() =>

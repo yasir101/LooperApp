@@ -84,7 +84,6 @@ const subscribeToMyGroups = (
     .once("value")
     .then((snapshot) => {
       if (snapshot.val()) {
-        console.log(snapshot.val());
         const filteredGroups = Object.values(snapshot.val()).filter(
           (group: any) => group.category === type
         );
@@ -325,7 +324,6 @@ const listenToGroupJoinedUsers = (
 
   const listener = groupRef.on("value", async (groupSnapshot) => {
     const groupData = groupSnapshot.val();
-    console.log("groupData", groupData);
     if (!groupData?.joinedBy) {
       onUpdate([]);
       return;
@@ -341,6 +339,26 @@ const listenToGroupJoinedUsers = (
 
     const users = (await Promise.all(userPromises)).filter((u) => u !== null);
     onUpdate(users as User[]);
+  });
+
+  // 🔁 Return a cleanup function to stop listening
+  return () => groupRef.off("value", listener);
+};
+
+const listenToGroupJoinedUsersId = (
+  groupId: string,
+  onUpdate: (users: User[]) => void
+): (() => void) => {
+  const groupRef = database().ref(`groups/${groupId}`);
+
+  const listener = groupRef.on("value", async (groupSnapshot) => {
+    const groupData = groupSnapshot.val();
+    if (!groupData?.joinedBy) {
+      onUpdate([]);
+      return;
+    }
+
+    onUpdate(groupData.joinedBy);
   });
 
   // 🔁 Return a cleanup function to stop listening
@@ -430,4 +448,5 @@ export {
   listenToGroupJoinedUsers,
   removeUserFromGroup,
   updateUserRole,
+  listenToGroupJoinedUsersId,
 };

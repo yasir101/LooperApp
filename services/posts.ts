@@ -4,7 +4,8 @@ import { getUser } from "./users";
 export type Post = {
   id: string;
   userId: string;
-  content: string;
+  content?: string; // Made optional since posts can be image-only
+  imageUrl?: string; // Added optional image URL field
   timestamp: number;
   groupId?: string;
   likes: { [key: string]: boolean };
